@@ -1,0 +1,29 @@
+██████  ██    ██  ██████  ███████
+██   ██ ██    ██ ██       ██
+██████  ██    ██ ██   ███ ███████ 
+██   ██ ██    ██ ██    ██      ██ 
+██████   ██████   ██████  ███████
+                                  
+Fecha de creación del archivo de texto: 25/05/19
+
+Función crear()
+    1. Al crear un nuevo usuario, se requiere guardar fecha de la creación de la cuenta, este lo guarda de una manera incorrecta.
+        **Esto fue cambiado a ingresar la fecha manualmente**
+
+    2. Al crear un usuario con el mismo número de cuenta lo guarda y crea un conflicto en la función lista().
+
+Función lista()
+    1. Al tener al menos un elemento guardado el saldo de este se imprime una linea abajo.
+
+    2. Al crear un usuario y checar dentro de la función lista() este no lo muestra hasta reiniciar el programa.
+
+Función detalles() 
+    1. Al mostrar los detalles de una cuenta no se muestran de manera correcta lo que es la fecha de creación y el saldo total dentro de la cuenta.
+
+Función modificar()
+
+Función eliminar()
+
+Función detalles()
+
+Función pago()

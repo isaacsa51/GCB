@@ -1,233 +1,267 @@
-	#include <stdio.h>
-	#include <stdlib.h>
-	#include <conio.h>
-	#include <windows.h>
+#include <stdio.h>
+#include <conio.h>
+#include <ctype.h>
+#include <string.h>
+#include <windows.h>
+#include <stdlib.h>
 
-	void main_menu();
+//Variables globales
+char esc;
 
-	void delay(int j){
-		int i, k;
+//Estructuras
+struct fecha{
+	int day, month, year;
+};
 
-		for(i=0; i<j; i++)
-			k=i;
+struct{
+	char telefono[50];
+	char nombre[100];
+	char num_cu[20];
+	char nomTemp;
+	float dinero;
+
+	struct fecha creacion;
+	struct fecha deposito;
+	struct fecha transicion;
+	struct fecha retiro;
+}a, el, ed, ch;
+
+//Funciones
+void menu();
+void crear();
+void lista();
+void detalles();
+void modificar();
+void eliminar();
+void pago();
+
+int main(){
+	menu();
+}
+
+void menu(){
+	int opcion;
+
+	printf("\n\t\t\t\t\t\t MENU PRINCIPAL");
+	printf("\n\n\t1. Crear una nueva cuenta.");
+	printf("\n\t2. Ver una lista de todas las cuentas creadas.");
+	printf("\n\t3. Ver detalles de una cuenta.");
+	printf("\n\t4. Modificar informacion de una cuenta.");
+	printf("\n\t5. Recargar saldo.");
+	printf("\n\t6. Eliminar una cuenta existente.");
+	printf("\n\t7. Salir.");
+	printf("\n\n\tIngrese una opcion: ");
+	scanf("%d", &opcion);
+
+	switch(opcion){
+		case 1:
+			crear();
+			break;
+		case 2:
+			lista();
+			break;
+		case 3:
+			detalles();
+			break;
+		case 4:
+			modificar();
+			break;
+		case 5:
+			pago();
+			break;
+		case 6:
+			eliminar();
+			break;
+		case 7:
+			printf("\n\n\n\tRegrese pronto...");
+			exit(1);
+			break;
+		default:
+			printf("\n\n\tFavor de ingresar una opcion correcta!");
+			getch();
+			system("cls");
+			menu();
+	}
+}
+
+void crear(){
+	//Creacion del archivo datos.ojs donde se almacenarï¿½ toda la informaciï¿½n
+	FILE *fDatos;
+	fDatos = fopen("datos.ojs", "ab+");
+	//Checar si existe el archivo
+	if(fDatos == 0){
+		fDatos = fopen("datos.ojs", "wb+");
+
+		system("cls");
+
+		printf("Espere mientras se crea la BD");
+		printf("\nPresione una tecla para continuar...");
+		getch();
 	}
 
+	while(1){
+		system("cls");
+		
+		crear_u:
+		printf(" Ingresa la fecha actual (ej: dd/mm/aa): ");
+		scanf("%d/%d/%d", &a.creacion.day, &a.creacion.month, &a.creacion.year);
+
+		printf("\n Ingrese el numero de cuenta de su tarjeta (ej: 0000-0000-0000-0000): ");
+		scanf("%s", &ch.num_cu);
+
+		//Comparar el nÃºmero de cuenta ingresado y checar si este existe dentro de los datos guardados
+		while(fscanf(fDatos, "%s %s %s %s %f %d/%d/%d", &a.telefono, &a.nombre, &a.num_cu, &a.dinero, &a.creacion.day, &a.creacion.month, &a.creacion.year) != EOF){
+			if(ch.num_cu == a.num_cu){
+				printf("El numero de cuenta ingresado ya existe!");
+
+				getch();
+				goto crear_u;
+			}
+		}
+		a.nombre == ch.num_cu;
+		
+		printf("\n Ingrese su nombre: ");
+		scanf("%c", &a.nomTemp);
+		fgets(a.nombre, 100, stdin);
+		printf("\n Ingrese su telefono: ");
+		scanf("%s", &a.telefono);
+		printf("\n Ingrese su saldo actual: $");
+		scanf("%f", &a.dinero);
+
+		//Guardar los datos ingresados en el archivo correspondiente
+		fwrite(&a, sizeof(a), 1, fDatos);
+		fflush(stdin);
+
+		system("cls");
+		printf("\t\t\t\t\t\t Usuario agregado correctamente!");
+		printf("\n\n Presione la tecla ESC para regresar al menu principal, otra tecla para crear otro registro.");
+		esc = getche();
+		if(esc==27)
+			system("cls");
+			menu();
+	}
+
+	fclose(fDatos);
+}
+
+void lista()
+{
+	system("cls");
+
+	printf("\n\t\t\tSi el usuario que acaba de agregar no aparece, reinicie el programa.\n\n\n\n");
+
+	FILE *fDatos;
+
+	int i;
 	char tecla;
 
-	struct fecha{
-		int dia, mes, anio;
-	};
-
-	struct datos_cliente{
-		char nombre[100];
-		char num_cu[250];
-		char nomTemp;		//Variable temporal
-		int edad;
-		long telefono;	
-		
-		struct fecha deposito;
-	}add, check;
-
-	void nueva_cu(){
-		FILE *fDatos;
-		fDatos=fopen("datos.txt","ab+");
-
-		nueva_cuenta:
-
-		if(fDatos==0){   
-			fDatos=fopen("datos.txt","wb+");
-			system("cls");
-			printf("\tEspere un momento en lo que se guardan los datos...");
-			printf("\t\n\nPresione una tecla para continuar.");
-			getch();
-		}
-
-		while(1){
-			system("cls");
-			printf("\n\t\t\t\t\t\tCREAR NUEVO USUARIO");
-
-			printf("\n\t Ingrese fecha actual (dd/mm/aa): ");
-			scanf("%d/%d/%d", &add.deposito.dia, &add.deposito.mes, &add.deposito.anio);
-
-			/*
-
-			//Pedir número de cuenta y checar si ya existe dentro de los registros para no guardarlo en caso de que ya exista
-			printf("\n\t Ingrese el numero de cuenta (ej: 0000-0000-0000-0000): ");
-			scanf("%s", &check.num_cu);
-			//Checar si existe
-			while(fscanf(fDatos, "%s %s %d %lf %d/%d/%d", &add.nombre, &add.num_cu, &add.edad, &add.telefono, &add.deposito.dia, &add.deposito.mes, &add.deposito.anio) != EOF){
-				if(check.num_cu == add.num_cu){
-					printf("\n\t El numero de cuenta ingresado ya existe!");
-					delay(1000000);
-					goto nueva_cuenta; //Redirigir a la creación de cuenta
-				}
-			}
-
-			//add.num_cu=check.num_cu;
-		
-			*/
-
-			printf("\n\t Ingrese su nombre: ");
-			scanf("%c", &add.nomTemp);		//Guarda el valor de nombre en una variable "temporal" para liberar el buffer y poder guardar un char con espacios
-			fgets(add.nombre, 100, stdin);
-			
-			printf("\n\t Ingrese su edad: ");
-			scanf("%d",&add.edad);
-			fflush(stdin);
-			
-			printf("\n\t Ingrese su numero de celular: ");
-			scanf("%lf", &add.telefono);
-			
-			fwrite(&add, sizeof(add), 1, fDatos);
-			fflush(stdin);
-			
-			system("cls");
-			
-			printf("\n Usuario agregado correctamente");
-			
-			//Checar si la tecla que se presione es ESC para salir, si no ejecutar la función de nuevo
-			printf("\n Presione la tecla ESC para volver al menu principal, si cualquier otra letra para introducir otro usuario.");
-			tecla = getche();
-			if(tecla == 27){
-				system("cls");
-				main_menu();	
-			}
-		}
-		fclose(fDatos);
-	}
-
-	void lista_cu(){
+	//En caso de que no haya ningun registro y si se ingresa a la funciï¿½n lista, regresarlo
+	if((fDatos = fopen("datos.ojs", "rb")) == NULL){
 		system("cls");
 
-		FILE *fDatos;
+		printf("\n No hay ningun usuario registrado dentro del sistema!");
 
-		//Checa si hay datos dentro del sistema, si no existe que se regrese al menu principal
-		if ((fDatos = fopen("datos.txt", "rb")) == NULL){
+		printf("\n\n\n Presione cualquier tecla para regresar al menu principal...");
+		esc = getche();
+		if (esc != 27){
 			system("cls");
+			menu();
+		}
+	}else{
+		printf(" Num. Cuenta\t\tNum. Telefono\t\tNombre\t\tCreacion de la cuenta\n");
+		for(i = 0;i<99;i++)
+			printf("-");
+		
+		while(fread(&a, sizeof(a), 1, fDatos) == 1){
+			printf("\n %s\t%s\t\t\t%s\t%02d/%02d/%02d", a.num_cu, a.telefono, a.nombre, a.creacion.day, a.creacion.month, a.creacion.year);
 
-			printf("\n No hay ningun usuario registrado dentro del sistema!");
+			printf("\n");
+			for(i=0;i<99;i++)
+				printf("-");
+		}
+		for(i=0;i<99;i++)
+			printf("-");
 
-			printf("\n\n\n Presione cualquier tecla para regresar al menu principal...");
-			tecla = getche();
-			if (tecla != 27){
-				system("cls");
-				main_menu();
-			}
-			
+		fclose(fDatos);
+		
+		printf("\n\n\n Presione una tecla para regresar al menu principal...");
+		tecla = getche();
+		if(tecla != 27){
 			system("cls");
-
-			main_menu();
+			menu();	
 		}else{
 			system("cls");
+			menu();
+		}
+	}
+}
 
-			printf("\nNOMBRE\t\tEDAD\t\tNUM. TELEFONO\t\t\n");
+void detalles(){
+	FILE *fDatos;
 
-			for(int i=0; i<79; i++)
-				printf("-");
+	char num_cu[20];
+	int flag = 1;
 
-			while(fread(&add, sizeof(add), 1, fDatos) == 1){
-				printf("\n%s\t\t%d\t\t%lf", &add.nombre, &add.edad, &add.telefono);
-			}
+	fDatos = fopen("datos.ojs", "rb+");
 
-			// fread(&add, sizeof(add), 50, fDatos);
-			// printf("\n%s", &add.nombre);
+	if(fDatos == 0){
+		system("cls");
+		printf(" No hay ningun registro dentro de la BD!");
 
-			for(int i=0;i<79;i++)
-				printf("-");
-			
-			fclose(fDatos);
-			
-			//Checar tecla presionada para ir al menu principal
-			printf("\n\n\n Presione una tecla para regresar al menu principal");
-			tecla = getche();
-			if(tecla != 27){
-				system("cls");
-				main_menu();	
-			}else{
-				system("cls");
-				main_menu();
-			}
+		printf("\n\n\n Presione una tecla para regresar al menu principal...");
+		esc = getche();
+		if(esc != 27){
+			system("cls");
+			menu();	
+		}else{
+			system("cls");
+			menu();
 		}
 	}
 
-	void edit_cu(){
-		system("cls");
-		printf("\nEDITAR");
-	}
+	fflush(stdin);
 
-	void rec_saldo(){
-		system("cls");
-		printf("\nRECARGA");
-	}
+	system("cls");
 
-	void deposito(){
-		system("cls");
-		printf("\nDEPOSITO");
-	}
+	//Pedir el numero de cuenta a buscar
+	printf("\n Ingrese el numero de cuenta a buscar informacion (ej: 0000-0000-0000-0000): ");
+	scanf("%s", num_cu);
 
-	void elim_cu(){
-		system("cls");
-		printf("\nELIMINAR CUENTA");
-	}
-
-	void salir(){
-		printf("\n\n\n\tRegrese pronto...");
-		exit(1);
-	}
-
-	void main_menu(){
-		int opcion;
-
-		printf("\n\t\t\t\t\t\t MENU PRINCIPAL");
-		printf("\n\n\t1. Crear una nueva cuenta.");
-		printf("\n\t2. Ver una lista de todas las cuentas creadas");
-		printf("\n\t3. Modificar informacion de una cuenta");
-		printf("\n\t4. Recargar saldo");
-		printf("\n\t5. Hacer un deposito");
-		printf("\n\t6. Eliminar una cuenta existente");
-		printf("\n\t7. Salir");
-		
-		printf("\n\n\tIngrese una opcion: ");
-		scanf("%d", &opcion);
-
-		switch(opcion){
-			case 1:
-				nueva_cu();
-				break;
-
-			case 2:
-				lista_cu();
-				break;
-
-			case 3:
-				edit_cu();
-				break;
-
-			case 4:
-				rec_saldo();
-				break;
-
-			case 5:
-				deposito();
-				break;
-
-			case 6:
-				elim_cu();
-				break;
+	while(fread(&a, sizeof(a), 1, fDatos) == 1){
+		if(strcmp(a.num_cu, num_cu) == 0){
+			system("cls");
+			printf("\n\t\t\t\t\t\t Registro encontrado");
 			
-			case 7:
-				salir();
-				break;
-				
-			default:
-				system("cls");
-				printf("\nFavor de ingresar una opcion correcta");
-				system("cls");
-				main_menu();
+			printf("\n Num. cuenta: %s\n Nombre: %s\n Telefono: %s\n Fecha de creacion de la cuenta: %02d/%02d/%02d\n Saldo total: $%.2f", &a.num_cu, &a.nombre, &a.telefono, &a.creacion.day, &a.creacion.month, &a.creacion.year, &a.dinero);
+			flag = 0;
+			break;
+		} else{
+			system("cls");
+			printf("\n El numero de cuenta no fue encontrado dentro de la BD");	
 		}
 	}
 
-	main(){
-		main_menu();
+	printf("\n\n\n Presione la tecla ESC para regresar al menu principal, otra tecla para buscar otro usuario.");
+	esc = getche();
+	if(esc==27){
+		system("cls");
+		menu();
+	}else{
+		system("cls");
+		detalles();
 	}
 
+	fclose(fDatos);
+}
+
+void modificar(){
+	printf("\nmodificar");
+}
+
+void eliminar(){
+	printf("\neliminar");
+}
+
+void pago(){
+	printf("\npago");
+}
